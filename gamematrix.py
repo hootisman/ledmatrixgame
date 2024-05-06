@@ -48,15 +48,23 @@ class Snake(object):
 
             graphics.DrawLine(matrix, back_x, back_y, self.x, self.y, snakecol)
 
+        def move(self):
+            self.len = self.len - 1
+
     def __init__(self):
         self.x_pos = 20
         self.y_pos = 20
         self.dir = Snake.Direction.DOWN
         self.speed = 0.05
+
+        #length of the head segment
+        self.headlen = 8
+
+        #total length of snake
         self.len = 8
 
         self.head = Snake.Segment(self.x_pos, self.y_pos, self.len, self.dir)
-        self.segments = [self.head]
+        self.segments = []
         
         #seperate user input thread
         self.input_t = Thread(target=self.user_input)
@@ -77,13 +85,32 @@ class Snake(object):
                 self.x_pos = self.x_pos + self.speed
         self.head.x = self.x_pos
         self.head.y = self.y_pos
+        
+        self.head.draw(matrix)
 
-        self.draw(matrix)
+        self.move_segs()
 
-    def draw(self, matrix):
+        self.draw_segs(matrix)
+
+    def move_segs(self):
+
+        for seg in self.segments:
+            seg.move()
+            if seg.len <= 0:
+                self.segments.pop(0)
+
+
+    def draw_segs(self, matrix):
         for seg in self.segments:
             seg.draw(matrix)
+    
+    def new_segment(self):
+        seg = Snake.Segment(self.x_pos, self.y_pos, self.headlen, self.dir)
+        self.segments.append(seg)
+        
+        self.headlen = 1
 
+    
     def user_input(self):
         global running
 
@@ -91,12 +118,16 @@ class Snake(object):
             key = readchar.readkey()
             match key:
                 case 'w':
+                    self.new_segment()
                     self.dir = Snake.Direction.UP
                 case 's':
+                    self.new_segment()
                     self.dir = Snake.Direction.DOWN
                 case 'a':
+                    self.new_segment()
                     self.dir = Snake.Direction.LEFT
                 case 'd':
+                    self.new_segment()
                     self.dir = Snake.Direction.RIGHT
                 case 'q' | 0x1B | 0x04:
                     running = False
