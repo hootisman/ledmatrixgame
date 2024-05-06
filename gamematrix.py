@@ -10,6 +10,7 @@ from enum import Enum
 
 running = True
 
+snakecol = graphics.Color(255,255,0)
 
 class Snake(object):
     class Direction(Enum):
@@ -19,39 +20,69 @@ class Snake(object):
         RIGHT = 4
 
     class Segment(object):
-        def __init__(self, x, y):
+        def __init__(self, x, y, length, seg_dir):
             self.x = x
             self.y = y
+            self.len = length
+            self.dir = seg_dir
+
+        def get_back_pos(self):
+            back_x = self.x
+            back_y = self.y
+
+            match self.dir:
+                case Snake.Direction.UP:
+                    back_y = back_y + self.len
+                case Snake.Direction.DOWN:
+                    back_y = back_y - self.len
+                case Snake.Direction.LEFT:
+                    back_x = back_x + self.len
+                case Snake.Direction.RIGHT:
+                    back_x = back_x - self.len
+            
+            return (back_x, back_y)
 
         def draw(self, matrix):
-            pass
+            global snakecol
+            (back_x,back_y) = self.get_back_pos()
+
+            graphics.DrawLine(matrix, back_x, back_y, self.x, self.y, snakecol)
 
     def __init__(self):
-        self.x_pos = 32
-        self.y_pos = 32
+        self.x_pos = 20
+        self.y_pos = 20
         self.dir = Snake.Direction.DOWN
         self.speed = 0.05
+        self.len = 8
+
+        self.head = Snake.Segment(self.x_pos, self.y_pos, self.len, self.dir)
+        self.segments = [self.head]
         
         #seperate user input thread
         self.input_t = Thread(target=self.user_input)
         self.input_t.start()
 
-    def move(self):
-
+    def move(self, matrix):
         match self.dir:
             case Snake.Direction.UP:
                 self.y_pos = self.y_pos - self.speed
-                pass
+
             case Snake.Direction.DOWN:
                 self.y_pos = self.y_pos + self.speed
-                pass
+
             case Snake.Direction.LEFT:
                 self.x_pos = self.x_pos - self.speed
-                pass
+
             case Snake.Direction.RIGHT:
                 self.x_pos = self.x_pos + self.speed
-                pass
+        self.head.x = self.x_pos
+        self.head.y = self.y_pos
 
+        self.draw(matrix)
+
+    def draw(self, matrix):
+        for seg in self.segments:
+            seg.draw(matrix)
 
     def user_input(self):
         global running
@@ -89,11 +120,11 @@ class LEDGame(MatrixBase):
         while running:
             self.matrix.Clear()
             #graphics.DrawCircle(self.matrix, snake.x_pos, snake.y_pos, 2, paccol)
-            graphics.DrawLine(self.matrix, snake.x_pos, snake.y_pos -2, snake.x_pos, snake.y_pos, paccol)
+            #graphics.DrawLine(self.matrix, snake.x_pos, snake.y_pos, snake.x_pos, snake.y_pos, paccol)
 
 
             #snake.y_pos = -6 if snake.y_pos >= 68 else snake.y_pos + 0.05
-            snake.move()
+            snake.move(self.matrix)
 
             #self.usleep(100000)
 
