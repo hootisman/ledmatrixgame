@@ -10,6 +10,7 @@ from enum import Enum
 
 running = True
 
+
 class Snake(object):
     class Direction(Enum):
         UP = 1
@@ -17,12 +18,40 @@ class Snake(object):
         LEFT = 3
         RIGHT = 4
 
+    class Segment(object):
+        def __init__(self, x, y):
+            self.x = x
+            self.y = y
+
+        def draw(self, matrix):
+            pass
+
     def __init__(self):
         self.x_pos = 32
         self.y_pos = 32
-
+        self.dir = Snake.Direction.DOWN
+        self.speed = 0.05
+        
+        #seperate user input thread
         self.input_t = Thread(target=self.user_input)
         self.input_t.start()
+
+    def move(self):
+
+        match self.dir:
+            case Snake.Direction.UP:
+                self.y_pos = self.y_pos - self.speed
+                pass
+            case Snake.Direction.DOWN:
+                self.y_pos = self.y_pos + self.speed
+                pass
+            case Snake.Direction.LEFT:
+                self.x_pos = self.x_pos - self.speed
+                pass
+            case Snake.Direction.RIGHT:
+                self.x_pos = self.x_pos + self.speed
+                pass
+
 
     def user_input(self):
         global running
@@ -30,14 +59,14 @@ class Snake(object):
         while running:
             key = readchar.readkey()
             match key:
-                case 'a':
-                    self.x_pos = self.x_pos - 1
-                case 'd':
-                    self.x_pos = self.x_pos + 1
                 case 'w':
-                    self.y_pos = self.y_pos - 1
+                    self.dir = Snake.Direction.UP
                 case 's':
-                    self.y_pos = self.y_pos + 1
+                    self.dir = Snake.Direction.DOWN
+                case 'a':
+                    self.dir = Snake.Direction.LEFT
+                case 'd':
+                    self.dir = Snake.Direction.RIGHT
                 case 'q' | 0x1B | 0x04:
                     running = False
                 case _:
@@ -63,7 +92,10 @@ class LEDGame(MatrixBase):
             graphics.DrawLine(self.matrix, snake.x_pos, snake.y_pos -2, snake.x_pos, snake.y_pos, paccol)
 
 
-            snake.y_pos = -6 if snake.y_pos >= 68 else snake.y_pos + 0.05
+            #snake.y_pos = -6 if snake.y_pos >= 68 else snake.y_pos + 0.05
+            snake.move()
+
+            #self.usleep(100000)
 
 
             canvas = self.matrix.SwapOnVSync(canvas)
