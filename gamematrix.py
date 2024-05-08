@@ -63,7 +63,7 @@ class Segment(object):
 
         (back_x,back_y) = self.get_back_pos()
 
-        graphics.DrawLine(matrix, back_x, back_y, self.x, self.y, snakecol)
+        graphics.DrawLine(matrix, math.floor(back_x), math.floor(back_y), math.floor(self.x), math.floor(self.y), snakecol)
 
     def move(self):
         """internal movement of segment"""
