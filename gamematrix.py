@@ -1,8 +1,10 @@
 import sys
 import os
 import readchar
+import math
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/..'))
 
+from random import randrange
 from threading import Thread, Lock
 from Matrixbase import MatrixBase
 from rgbmatrix import graphics
@@ -12,6 +14,19 @@ running = True
 gamespeed = 0.05
 snakecol = graphics.Color(255,255,0)
 
+class Fruit(object):
+    def __init__(self, color):
+        self.color = color
+        self.rand_pos()
+
+    def draw(self, matrix):
+        graphics.DrawLine(matrix, self.x, self.y, self.x, self.y, self.color)
+
+    def rand_pos(self):
+        self.x = randrange(60) + 4
+        self.y = randrange(60) + 4
+        
+current_fruit = Fruit(graphics.Color(255,0,0))
 
 class Segment(object):
     def __init__(self, x, y, length, seg_dir):
@@ -75,7 +90,8 @@ class Snake(object):
 
     def move(self, matrix):
         global gamespeed
-        
+        global current_fruit
+
         #draw head
         match self.head.dir:
             case Snake.Direction.UP:
@@ -92,7 +108,12 @@ class Snake(object):
         
         if self.head.len <= self.snake_len:
             self.head.len = self.head.len + gamespeed
-    
+       
+        if math.floor(self.head.x) == current_fruit.x and math.floor(self.head.y) == current_fruit.y:
+            #snake has eaten the fruit
+            self.snake_len = self.snake_len + 1
+            current_fruit.rand_pos()
+
         #move each segment
         for seg in self.segments:
             if seg.len <= 0:
@@ -107,24 +128,6 @@ class Snake(object):
         #draw each segment
         for seg in self.segments:
             seg.draw(matrix)
-    
-    def invalid_move(self, direction):
-        """
-        returns move that snake cannot do depending on direction parameter
-        """
-        result = None
-        match direction:
-            case Snake.Direction.UP:
-                result = Snake.Direction.DOWN
-            case Snake.Direction.DOWN:
-                result = Snake.Direction.UP
-            case Snake.Direction.LEFT:
-                result = Snake.Direction.DOWN
-            case Snake.Direction.UP:
-                result = Snake.Direction.DOWN
-
-        return result
-
     
     def new_segment(self):
         seg = Segment(self.head.x, self.head.y, self.head.len - 1, self.head.dir)
@@ -179,6 +182,7 @@ class LEDGame(MatrixBase):
     
     def run(self):
         global running
+        global current_fruit
         
         snake = Snake()
 
@@ -190,6 +194,7 @@ class LEDGame(MatrixBase):
             #graphics.DrawCircle(self.matrix, snake.x_pos, snake.y_pos, 2, paccol)
             #graphics.DrawLine(self.matrix, snake.x_pos, snake.y_pos, snake.x_pos, snake.y_pos, paccol)
 
+            current_fruit.draw(self.matrix)
 
             #snake.y_pos = -6 if snake.y_pos >= 68 else snake.y_pos + 0.05
             snake.move(self.matrix)
