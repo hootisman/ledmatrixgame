@@ -107,6 +107,23 @@ class Snake(object):
         #draw each segment
         for seg in self.segments:
             seg.draw(matrix)
+    
+    def invalid_move(self, direction):
+        """
+        returns move that snake cannot do depending on direction parameter
+        """
+        result = None
+        match direction:
+            case Snake.Direction.UP:
+                result = Snake.Direction.DOWN
+            case Snake.Direction.DOWN:
+                result = Snake.Direction.UP
+            case Snake.Direction.LEFT:
+                result = Snake.Direction.DOWN
+            case Snake.Direction.UP:
+                result = Snake.Direction.DOWN
+
+        return result
 
     
     def new_segment(self):
@@ -130,22 +147,22 @@ class Snake(object):
             key = readchar.readkey()
             match key:
                 case 'w':
-                    if self.head.dir != Snake.Direction.UP:
+                    if self.head.dir != Snake.Direction.UP and self.head.dir != Snake.Direction.DOWN:
                         self.new_segment()
                         self.head.dir = Snake.Direction.UP
                         self.head.y = self.head.y - 1   #offset head
                 case 's':
-                    if self.head.dir != Snake.Direction.DOWN:
+                    if self.head.dir != Snake.Direction.DOWN and self.head.dir != Snake.Direction.UP:
                         self.new_segment()
                         self.head.dir = Snake.Direction.DOWN
                         self.head.y = self.head.y + 1   #offset head
                 case 'a':
-                    if self.head.dir != Snake.Direction.LEFT:
+                    if self.head.dir != Snake.Direction.LEFT and self.head.dir != Snake.Direction.RIGHT:
                         self.new_segment()
                         self.head.dir = Snake.Direction.LEFT
                         self.head.x = self.head.x - 1   #offset head
                 case 'd':
-                    if self.head.dir != Snake.Direction.RIGHT:
+                    if self.head.dir != Snake.Direction.RIGHT and self.head.dir != Snake.Direction.LEFT:
                         self.new_segment()
                         self.head.dir = Snake.Direction.RIGHT
                         self.head.x = self.head.x + 1   #offset head
