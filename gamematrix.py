@@ -39,6 +39,7 @@ class Segment(object):
         self.y = y
         self.len = length
         self.dir = seg_dir
+        
 
     def get_back_pos(self):
         back_x = self.x
@@ -115,11 +116,21 @@ class Snake(object):
             current_fruit.rand_pos()
 
         #move each segment
-        for seg in self.segments:
-            if seg.len <= 0:
-                self.segments.pop(0)
-            else:
-                seg.move()
+
+        #for seg in self.segments:
+        #    if seg.len <= 0:
+        #        self.segments.remove(seg)
+        #    else:
+        #        seg.move()
+        
+        if len(self.segments) == 0:
+            return
+
+        seg = self.segments[0]
+        if seg.len <= 0:
+            self.segments.pop(0)
+        else:
+            seg.move()
 
     def draw(self, matrix):
         #draw head
@@ -134,9 +145,6 @@ class Snake(object):
         self.segments.append(seg)
         
         self.head.len = 1
-
-        print("new seg" )
-
     
     def user_input(self):
         """
@@ -173,7 +181,7 @@ class Snake(object):
                     running = False
                 case _:
                     pass
-            print(key)
+            #print(key)
 
 
 class LEDGame(MatrixBase):
