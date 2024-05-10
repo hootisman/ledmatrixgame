@@ -11,7 +11,7 @@ from rgbmatrix import graphics
 from enum import Enum
 
 running = True
-gamespeed = 0.05
+gamespeed = 1
 snakecol = graphics.Color(255,255,0)
 
 class Fruit(object):
@@ -41,9 +41,9 @@ class Segment(object):
         self.dir = seg_dir
         
 
-    def get_back_pos(self):
-        back_x = self.x
-        back_y = self.y
+    def get_back_pos(self, x, y):
+        back_x = x
+        back_y = y
 
         match self.dir:
             case Snake.Direction.UP:
@@ -59,11 +59,15 @@ class Segment(object):
 
     def draw(self, matrix):
         """draws the segment"""
+        self.draw_pos(matrix, self.x, self.y)
+
+    def draw_pos(self, matrix, x, y):
         global snakecol
 
-        (back_x,back_y) = self.get_back_pos()
+        (back_x,back_y) = self.get_back_pos(x, y)
 
-        graphics.DrawLine(matrix, math.floor(back_x), math.floor(back_y), math.floor(self.x), math.floor(self.y), snakecol)
+        graphics.DrawLine(matrix, math.floor(back_x), math.floor(back_y), math.floor(x), math.floor(y), snakecol)
+        
 
     def move(self):
         """internal movement of segment"""
@@ -81,7 +85,7 @@ class Snake(object):
     def __init__(self):
         #total length of snake
         self.snake_len = 4
-
+            
         self.head = Segment(20, 20, self.snake_len, Snake.Direction.DOWN)
         self.segments = []
         
@@ -110,7 +114,7 @@ class Snake(object):
         if self.head.len <= self.snake_len:
             self.head.len = self.head.len + gamespeed
        
-        if math.floor(self.head.x) == current_fruit.x and math.floor(self.head.y) == current_fruit.y:
+        if self.head.x == current_fruit.x and self.head.y == current_fruit.y:
             #snake has eaten the fruit
             self.snake_len = self.snake_len + 1
             current_fruit.rand_pos()
@@ -125,8 +129,13 @@ class Snake(object):
         
         if len(self.segments) == 0:
             return
-
+        
         seg = self.segments[0]
+        #if seg.len <= 0:
+        #    self.segments.pop(0)
+        #else:
+        #    seg.move()
+
         if seg.len <= 0:
             self.segments.pop(0)
         else:
@@ -137,6 +146,7 @@ class Snake(object):
         self.head.draw(matrix)
 
         #draw each segment
+
         for seg in self.segments:
             seg.draw(matrix)
     
@@ -182,6 +192,7 @@ class Snake(object):
                 case _:
                     pass
             #print(key)
+            print("x: ", self.head.x, " y: ", self.head.y)
 
 
 class LEDGame(MatrixBase):
@@ -198,20 +209,17 @@ class LEDGame(MatrixBase):
 
         paccol = graphics.Color(255,255,0)
         while running:
-            self.matrix.Clear()
-            #graphics.DrawCircle(self.matrix, snake.x_pos, snake.y_pos, 2, paccol)
-            #graphics.DrawLine(self.matrix, snake.x_pos, snake.y_pos, snake.x_pos, snake.y_pos, paccol)
 
             current_fruit.draw(self.matrix)
 
-            #snake.y_pos = -6 if snake.y_pos >= 68 else snake.y_pos + 0.05
             snake.move(self.matrix)
             snake.draw(self.matrix)
 
-            #self.usleep(100000)
+            self.usleep(100000)
 
 
             canvas = self.matrix.SwapOnVSync(canvas)
+            self.matrix.Clear()
             
 # Main function
 if __name__ == "__main__":
