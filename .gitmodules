@@ -1,0 +1,3 @@
+[submodule "foundrymatrix"]
+	path = foundrymatrix
+	url = git@github.com:hootisman/foundrymatrix.git
