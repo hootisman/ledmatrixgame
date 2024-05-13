@@ -98,12 +98,10 @@ class Snake(object):
             self.new_segment()
             self.head.dir = Snake.Direction.RIGHT
             self.head.x = self.head.x + 1   #offset head
+
     def __init__(self):
         #total length of snake
         self.snake_len = 4
-<<<<<<< Updated upstream
-            
-=======
 
         #user input functions
         def stop():
@@ -120,7 +118,6 @@ class Snake(object):
         self.input.attach_key('d', self.right)
 
 
->>>>>>> Stashed changes
         self.head = Segment(20, 20, self.snake_len, Snake.Direction.DOWN)
         self.segments = []
 
@@ -150,22 +147,11 @@ class Snake(object):
             self.snake_len = self.snake_len + 1
             current_fruit.rand_pos()
 
-        #move each segment
-
-        #for seg in self.segments:
-        #    if seg.len <= 0:
-        #        self.segments.remove(seg)
-        #    else:
-        #        seg.move()
         
         if len(self.segments) == 0:
             return
         
         seg = self.segments[0]
-        #if seg.len <= 0:
-        #    self.segments.pop(0)
-        #else:
-        #    seg.move()
 
         if seg.len <= 0:
             self.segments.pop(0)
@@ -187,44 +173,7 @@ class Snake(object):
         
         self.head.len = 1
     
-    '''
-    def user_input(self):
-        global running
 
-        while running:
-            key = readchar.readkey()
-            match key:
-                case 'w':
-                    if self.head.dir != Snake.Direction.UP and self.head.dir != Snake.Direction.DOWN:
-                        self.new_segment()
-                        self.head.dir = Snake.Direction.UP
-                        self.head.y = self.head.y - 1   #offset head
-                case 's':
-                    if self.head.dir != Snake.Direction.DOWN and self.head.dir != Snake.Direction.UP:
-                        self.new_segment()
-                        self.head.dir = Snake.Direction.DOWN
-                        self.head.y = self.head.y + 1   #offset head
-                case 'a':
-                    if self.head.dir != Snake.Direction.LEFT and self.head.dir != Snake.Direction.RIGHT:
-                        self.new_segment()
-                        self.head.dir = Snake.Direction.LEFT
-                        self.head.x = self.head.x - 1   #offset head
-                case 'd':
-                    if self.head.dir != Snake.Direction.RIGHT and self.head.dir != Snake.Direction.LEFT:
-                        self.new_segment()
-                        self.head.dir = Snake.Direction.RIGHT
-                        self.head.x = self.head.x + 1   #offset head
-                case 'q' | 0x1B | 0x04:
-                    running = False
-                case _:
-                    pass
-            #print(key)
-            print("x: ", self.head.x, " y: ", self.head.y)
-<<<<<<< Updated upstream
-
-=======
-    '''
->>>>>>> Stashed changes
 
 class LEDGame(MatrixBase):
     def __init__(self, *args, **kwargs):
@@ -251,11 +200,8 @@ class LEDGame(MatrixBase):
 
             canvas = self.matrix.SwapOnVSync(canvas)
             self.matrix.Clear()
-<<<<<<< Updated upstream
-=======
 
         snake.input.exit()
->>>>>>> Stashed changes
             
 # Main function
 if __name__ == "__main__":
