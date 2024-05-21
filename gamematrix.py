@@ -17,6 +17,7 @@ class Fruit(object):
 
     def draw(self, matrix):
         graphics.DrawLine(matrix, self.x, self.y, self.x, self.y, self.color)
+        
 
     def rand_pos(self):
         self.x = randrange(60) + 4
@@ -185,7 +186,7 @@ class LEDGame(MatrixBase):
         
         snake = Snake()
 
-        canvas = self.matrix.CreateFrameCanvas()
+        #canvas = self.matrix.CreateFrameCanvas()
 
         paccol = graphics.Color(255,255,0)
         while running:
@@ -197,9 +198,8 @@ class LEDGame(MatrixBase):
 
             self.usleep(100000)
 
-
-            canvas = self.matrix.SwapOnVSync(canvas)
-            self.matrix.Clear()
+            
+            self.clear_screen()
 
         snake.input.exit()
             
